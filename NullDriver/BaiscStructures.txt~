@@ -1,0 +1,140 @@
+/usr/src/Linux/include/linux/Kdev_t.h
+
+#define MINORBITS       20
+#define MINORMASK       ((1U << MINORBITS) - 1)
+
+#define MAJOR(dev)      ((unsigned int) ((dev) >> MINORBITS))
+#define MINOR(dev)      ((unsigned int) ((dev) & MINORMASK))
+#define MKDEV(ma,mi)    (((ma) << MINORBITS) | (mi))
+
+#define print_dev_t(buffer,dev) \                               
+sprintf((buffer), "%u:%u\n", MAJOR(dev), MINOR(dev))
+
+#define MAJOR(dev)      ((dev)>>8)
+#define MINOR(dev)      ((dev) & 0xff)
+#define MKDEV(ma,mi)    ((ma)<<8 | (mi))
+
+
+
+
+/usr/src/Linux/include/linux/fs.h
+
+
+struct file_operations {
+        struct module *owner;
+        loff_t (*llseek) (struct file *, loff_t, int);
+        ssize_t (*read) (struct file *, char __user *, size_t, loff_t *);
+        ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *);
+        ssize_t (*aio_read) (struct kiocb *, const struct iovec *, unsigned long, loff_t);
+        ssize_t (*aio_write) (struct kiocb *, const struct iovec *, unsigned long, loff_t);
+        int (*readdir) (struct file *, void *, filldir_t);
+        unsigned int (*poll) (struct file *, struct poll_table_struct *);
+        long (*unlocked_ioctl) (struct file *, unsigned int, unsigned long);
+        long (*compat_ioctl) (struct file *, unsigned int, unsigned long);
+        int (*mmap) (struct file *, struct vm_area_struct *);
+        int (*open) (struct inode *, struct file *);
+        int (*flush) (struct file *, fl_owner_t id);
+        int (*release) (struct inode *, struct file *);
+        int (*fsync) (struct file *, loff_t, loff_t, int datasync);
+        int (*aio_fsync) (struct kiocb *, int datasync);
+        int (*fasync) (int, struct file *, int);
+        int (*lock) (struct file *, int, struct file_lock *);
+        ssize_t (*sendpage) (struct file *, struct page *, int, size_t, loff_t *, int);
+        unsigned long (*get_unmapped_area)(struct file *, unsigned long, unsigned long, unsigned long, unsigned long);
+        int (*check_flags)(int);
+        int (*flock) (struct file *, int, struct file_lock *);
+        ssize_t (*splice_write)(struct pipe_inode_info *, struct file *, loff_t *, size_t, unsigned int);
+        ssize_t (*splice_read)(struct file *, loff_t *, struct pipe_inode_info *, size_t, unsigned int);
+        int (*setlease)(struct file *, long, struct file_lock **);
+        long (*fallocate)(struct file *file, int mode, loff_t offset,
+                          loff_t len);
+};
+
+
+
+
+/usr/src/Linux/include/linux/cdev.h
+
+
+struct cdev {
+ 13         struct kobject kobj;
+ 14         struct module *owner;
+ 15         const struct file_operations *ops;
+ 16         struct list_head list;
+ 17         dev_t dev;
+ 18         unsigned int count;
+ 19 };
+
+ void cdev_init(struct cdev *, const struct file_operations *);
+ 22 
+ 23 struct cdev *cdev_alloc(void);
+ 24 
+ 25 void cdev_put(struct cdev *p);
+ 26 
+ 27 int cdev_add(struct cdev *, dev_t, unsigned);
+ 28 
+ 29 void cdev_del(struct cdev *);
+ 30 
+ 31 void cd_forget(struct inode *);
+
+
+
+
+
+
+/usr/src/Linux/include/linux/device.h
+
+
+
+
+
+struct class {
+187         const char              *name;
+188         struct module           *owner;
+189 
+190         struct class_attribute          *class_attrs;
+191         struct device_attribute         *dev_attrs;
+192         struct kobject                  *dev_kobj;
+193 
+194         int (*dev_uevent)(struct device *dev, struct kobj_uevent_env *env);
+195         char *(*nodename)(struct device *dev);
+196 
+197         void (*class_release)(struct class *class);
+198         void (*dev_release)(struct device *dev);
+199 
+200         int (*suspend)(struct device *dev, pm_message_t state);
+201         int (*resume)(struct device *dev);
+202 
+203         struct dev_pm_ops *pm;
+204         struct class_private *p;
+205 };
+
+
+
+/* This is a #define to keep the compiler from merging different
+271  * instances of the __key variable */
+272 #define class_create(owner, name)               \
+273 ({                                              \
+274         static struct lock_class_key __key;     \
+275         __class_create(owner, name, &__key);    \
+276 })
+277 
+
+
+extern struct device *device_create(struct class *cls, struct device *parent,
+524                                     dev_t devt, void *drvdata,
+525                                     const char *fmt, ...)
+526                                     __attribute__((format(printf, 5, 6)));
+
+
+
+
+
+
+
+
+
+
+
+
+

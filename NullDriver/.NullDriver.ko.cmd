@@ -1,0 +1,1 @@
+cmd_/home/neon/Gitexp/LDD-Prac/NullDriver/NullDriver.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.2.0-29-generic/scripts/module-common.lds --build-id  -o /home/neon/Gitexp/LDD-Prac/NullDriver/NullDriver.ko /home/neon/Gitexp/LDD-Prac/NullDriver/NullDriver.o /home/neon/Gitexp/LDD-Prac/NullDriver/NullDriver.mod.o
